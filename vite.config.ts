@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -13,6 +14,6 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   define: {
-    'process.env': {}
+    'process.env': process.env
   }
 });
