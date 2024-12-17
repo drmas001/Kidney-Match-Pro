@@ -1,12 +1,13 @@
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import autoTable, { UserOptions } from 'jspdf-autotable';
 import { format } from 'date-fns';
 import type { Database } from '@/types/supabase';
 
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: typeof autoTable;
+    autoTable: (options: UserOptions) => void;
+    lastAutoTable: { finalY: number };
   }
 }
 
@@ -294,7 +295,7 @@ export function generatePDF(data: ReportData) {
         cellPadding: 3
       },
       margin: { left: margin, right: margin }
-    });
+    } as UserOptions);
 
     y = doc.lastAutoTable.finalY + 10;
   }
