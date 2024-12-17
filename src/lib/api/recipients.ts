@@ -131,6 +131,8 @@ function transformRecipientData(data: any): Recipient {
     mrn: data.mrn,
     nationalId: data.national_id,
     fullName: data.full_name,
+    age: data.age,
+    mobileNumber: data.mobile_number,
     bloodType: data.blood_type,
     hlaTyping: {
       hlaA: data.hla_typing?.hla_a || '',
@@ -142,7 +144,14 @@ function transformRecipientData(data: any): Recipient {
     },
     pra: data.pra,
     crossmatchRequirement: data.crossmatch_requirement,
-    viralScreening: data.viral_screening,
+    viralScreening: data.viral_screening || '',
     cmvStatus: data.cmv_status,
+    unacceptableAntigens: data.unacceptable_antigens || '',
+    donorAntibodies: data.donor_antibodies || '',
+    medicalHistory: data.medical_history || '',
+    notes: data.notes || '',
+    serumCreatinine: data.serum_creatinine || 0,
+    egfr: data.egfr || 0,
+    bloodPressure: data.blood_pressure || 'N/A'
   };
 }
