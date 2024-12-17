@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { UserConfig } from 'jspdf-autotable';
+import type { UserOptions } from 'jspdf-autotable';
 import { format } from 'date-fns';
 import type { Database } from '@/types/supabase';
 
@@ -296,7 +296,7 @@ export async function generatePDF(data: ReportData) {
         cellPadding: 3
       },
       margin: { left: margin, right: margin }
-    } as UserConfig);
+    } satisfies UserOptions);
 
     // @ts-ignore
     y = doc.lastAutoTable.finalY + 10;
