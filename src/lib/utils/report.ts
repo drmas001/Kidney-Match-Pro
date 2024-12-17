@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
+import 'jspdf-autotable/dist/jspdf.plugin.autotable';
 import { format } from 'date-fns';
 import type { Database } from '@/types/supabase';
-import 'jspdf-autotable';
 
 type Donor = Database['public']['Tables']['donors']['Row'];
 type Recipient = Database['public']['Tables']['recipients']['Row'];
