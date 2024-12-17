@@ -13,23 +13,17 @@ export default defineConfig(({ mode }) => {
       },
     },
     optimizeDeps: {
-      exclude: ['lucide-react']
+      exclude: ['lucide-react'],
+      include: ['jspdf', 'jspdf-autotable']
     },
     build: {
       commonjsOptions: {
         include: [/node_modules/]
-      },
-      rollupOptions: {
-        external: ['jspdf-autotable'],
-        output: {
-          globals: {
-            'jspdf-autotable': 'jspdfAutoTable'
-          }
-        }
       }
     },
     define: {
-      'process.env': env,
+      'process.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
       global: {}
     }
   };
