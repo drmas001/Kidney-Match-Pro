@@ -80,53 +80,54 @@ export function Reports() {
       preferred_matches: ''
     };
 
-    generatePDF({ 
-      recipient: dbRecipient,
-      results: results.map(r => {
-        const dbDonor: DBDonor = {
-          id: r.donor.id,
-          created_at: new Date().toISOString(),
-          mrn: r.donor.mrn,
-          national_id: r.donor.nationalId,
-          full_name: r.donor.fullName,
-          age: r.donor.age,
-          blood_type: r.donor.bloodType,
-          mobile_number: r.donor.mobileNumber,
-          hla_typing: {
-            hla_a: r.donor.hlaTyping.hlaA,
-            hla_b: r.donor.hlaTyping.hlaB,
-            hla_c: r.donor.hlaTyping.hlaC,
-            hla_dr: r.donor.hlaTyping.hlaDR,
-            hla_dq: r.donor.hlaTyping.hlaDQ,
-            hla_dp: r.donor.hlaTyping.hlaDP,
-          },
-          crossmatch_result: r.donor.crossmatchResult,
-          donor_antibodies: r.donor.donorAntibodies || '',
-          serum_creatinine: r.donor.serumCreatinine || 0,
-          egfr: r.donor.egfr || 0,
-          viral_screening: r.donor.viralScreening || '',
-          cmv_status: r.donor.cmvStatus || '',
-          medical_conditions: r.donor.medicalConditions || '',
-          notes: r.donor.notes || '',
-          status: 'Available' as const,
-          high_res_typing: r.donor.highResTyping || '',
-          antigen_mismatch: r.donor.antigenMismatch || 0,
-          blood_pressure: r.donor.bloodPressure || 'N/A'
-        };
+    try {
+      const doc = generatePDF({ 
+        recipient: dbRecipient,
+        results: results.map(r => {
+          const dbDonor: DBDonor = {
+            id: r.donor.id,
+            created_at: new Date().toISOString(),
+            mrn: r.donor.mrn,
+            national_id: r.donor.nationalId,
+            full_name: r.donor.fullName,
+            age: r.donor.age,
+            blood_type: r.donor.bloodType,
+            mobile_number: r.donor.mobileNumber,
+            hla_typing: {
+              hla_a: r.donor.hlaTyping.hlaA,
+              hla_b: r.donor.hlaTyping.hlaB,
+              hla_c: r.donor.hlaTyping.hlaC,
+              hla_dr: r.donor.hlaTyping.hlaDR,
+              hla_dq: r.donor.hlaTyping.hlaDQ,
+              hla_dp: r.donor.hlaTyping.hlaDP,
+            },
+            crossmatch_result: r.donor.crossmatchResult,
+            donor_antibodies: r.donor.donorAntibodies || '',
+            serum_creatinine: r.donor.serumCreatinine || 0,
+            egfr: r.donor.egfr || 0,
+            viral_screening: r.donor.viralScreening || '',
+            cmv_status: r.donor.cmvStatus || '',
+            medical_conditions: r.donor.medicalConditions || '',
+            notes: r.donor.notes || '',
+            status: 'Available' as const,
+            high_res_typing: r.donor.highResTyping || '',
+            antigen_mismatch: r.donor.antigenMismatch || 0,
+            blood_pressure: r.donor.bloodPressure || 'N/A'
+          };
 
-        return {
-          donor: dbDonor,
-          recipient: dbRecipient,
-          compatibilityScore: r.compatibilityScore,
-          matchDetails: r.matchDetails
-        };
-      }),
-      timestamp 
-    }).then(doc => {
+          return {
+            donor: dbDonor,
+            recipient: dbRecipient,
+            compatibilityScore: r.compatibilityScore,
+            matchDetails: r.matchDetails
+          };
+        }),
+        timestamp 
+      });
       doc.save(`matching-report-${new Date().toISOString().split('T')[0]}.pdf`);
-    }).catch(error => {
+    } catch (error) {
       console.error('Error generating PDF:', error);
-    });
+    }
   };
 
   const handlePrint = () => {

@@ -1,13 +1,7 @@
 import { jsPDF } from 'jspdf';
-import type { UserOptions } from 'jspdf-autotable';
+import 'jspdf-autotable';
 import { format } from 'date-fns';
 import type { Database } from '@/types/supabase';
-
-// Import jspdf-autotable dynamically
-async function loadAutoTable() {
-  const autoTable = (await import('jspdf-autotable')).default;
-  return autoTable;
-}
 
 type Donor = Database['public']['Tables']['donors']['Row'];
 type Recipient = Database['public']['Tables']['recipients']['Row'];
@@ -33,16 +27,13 @@ interface ReportData {
   timestamp: string;
 }
 
-export async function generatePDF(data: ReportData) {
+export function generatePDF(data: ReportData) {
   const { recipient, results, timestamp } = data;
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
   });
-
-  // Load autoTable plugin
-  const autoTable = await loadAutoTable();
 
   // Page dimensions and margins
   const pageWidth = doc.internal.pageSize.width;
@@ -274,7 +265,7 @@ export async function generatePDF(data: ReportData) {
       result.matchDetails.excludedReason || 'Incompatible match'
     ]);
 
-    autoTable(doc, {
+    (doc as any).autoTable({
       startY: y,
       head: [tableHeaders.map(h => h.header)],
       body: tableRows,
@@ -296,10 +287,9 @@ export async function generatePDF(data: ReportData) {
         cellPadding: 3
       },
       margin: { left: margin, right: margin }
-    } satisfies UserOptions);
+    });
 
-    // @ts-ignore
-    y = doc.lastAutoTable.finalY + 10;
+    y = (doc as any).lastAutoTable.finalY + 10;
   }
 
   // Add final footer

@@ -14,15 +14,11 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: {
       exclude: ['lucide-react'],
+      include: ['jspdf', 'jspdf-autotable']
     },
     build: {
-      rollupOptions: {
-        external: ['jspdf-autotable'],
-        output: {
-          globals: {
-            'jspdf-autotable': 'jspdf-autotable'
-          }
-        }
+      commonjsOptions: {
+        include: [/node_modules/],
       }
     },
     define: {
