@@ -1,7 +1,14 @@
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 import type { Database } from '@/types/supabase';
+
+// Extend jsPDF type to include autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: typeof autoTable;
+  }
+}
 
 type Donor = Database['public']['Tables']['donors']['Row'];
 type Recipient = Database['public']['Tables']['recipients']['Row'];
@@ -265,7 +272,7 @@ export function generatePDF(data: ReportData) {
       result.matchDetails.excludedReason || 'Incompatible match'
     ]);
 
-    (doc as any).autoTable({
+    doc.autoTable({
       startY: y,
       head: [tableHeaders.map(h => h.header)],
       body: tableRows,
@@ -289,7 +296,7 @@ export function generatePDF(data: ReportData) {
       margin: { left: margin, right: margin }
     });
 
-    y = (doc as any).lastAutoTable.finalY + 10;
+    y = doc.lastAutoTable.finalY + 10;
   }
 
   // Add final footer
