@@ -146,8 +146,12 @@ export async function updateDonorStatus(id: string, status: 'Available' | 'Utili
 function transformDonorData(data: any): Donor & { status: 'Available' | 'Utilized' } {
   return {
     id: data.id,
+    mrn: data.mrn,
+    nationalId: data.national_id,
     fullName: data.full_name,
+    age: data.age,
     bloodType: data.blood_type,
+    mobileNumber: data.mobile_number,
     hlaTyping: {
       hlaA: data.hla_typing?.hla_a || '',
       hlaB: data.hla_typing?.hla_b || '',
@@ -157,13 +161,19 @@ function transformDonorData(data: any): Donor & { status: 'Available' | 'Utilize
       hlaDP: data.hla_typing?.hla_dp || '',
     },
     crossmatchResult: data.crossmatch_result,
+    donorAntibodies: data.donor_antibodies || '',
+    serumCreatinine: data.serum_creatinine || 0,
+    egfr: data.egfr || 0,
+    bloodPressure: data.blood_pressure || 'N/A',
+    viralScreening: data.viral_screening || '',
+    cmvStatus: data.cmv_status || '',
+    medicalConditions: data.medical_conditions || '',
+    notes: data.notes || '',
+    highResTyping: data.high_res_typing || '',
+    antigenMismatch: data.antigen_mismatch || 0,
     dsaResult: {
-      detected: false, // Add proper DSA handling if needed
+      detected: false,
     },
-    serumCreatinine: data.serum_creatinine,
-    egfr: data.egfr,
-    viralScreening: data.viral_screening,
-    cmvStatus: data.cmv_status,
-    status: data.status,
+    status: data.status
   };
 }

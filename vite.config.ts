@@ -10,15 +10,16 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-      },
+      }
     },
     optimizeDeps: {
-      exclude: ['lucide-react'],
-      include: ['jspdf', 'jspdf-autotable']
+      exclude: ['lucide-react']
     },
     build: {
-      commonjsOptions: {
-        include: [/node_modules/]
+      rollupOptions: {
+        output: {
+          manualChunks: {}
+        }
       }
     },
     define: {

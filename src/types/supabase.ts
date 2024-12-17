@@ -64,6 +64,7 @@ export interface Database {
           cmv_status: string;
           medical_history: string;
           notes: string;
+          unacceptable_antigens: string;
         };
         Insert: Omit<Database['public']['Tables']['recipients']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['recipients']['Insert']>;

@@ -19,26 +19,45 @@ export interface Recipient {
   mrn: string;
   nationalId: string;
   fullName: string;
-  bloodType: BloodType;
+  age: number;
+  bloodType: string;
+  mobileNumber: string;
   hlaTyping: HLATyping;
   pra: number;
   crossmatchRequirement: string;
   viralScreening: string;
   cmvStatus: string;
+  unacceptableAntigens: string;
+  donorAntibodies: string;
+  medicalHistory: string;
+  notes: string;
+  serumCreatinine: number;
+  egfr: number;
+  bloodPressure: string;
 }
 
 export interface Donor {
   id: string;
+  mrn: string;
+  nationalId: string;
   fullName: string;
-  bloodType: BloodType;
+  age: number;
+  bloodType: string;
+  mobileNumber: string;
   hlaTyping: HLATyping;
   crossmatchResult: string;
-  dsaResult: DSAResult;
+  donorAntibodies: string;
   serumCreatinine: number;
   egfr: number;
+  bloodPressure: string;
   viralScreening: string;
   cmvStatus: string;
-  compatibilityScore?: number;
+  medicalConditions: string;
+  notes: string;
+  highResTyping: string;
+  antigenMismatch: number;
+  dsaResult: DSAResult;
+  status: 'Available' | 'Utilized';
 }
 
 export interface MatchingResult {

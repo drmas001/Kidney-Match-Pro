@@ -12,7 +12,7 @@ CREATE TABLE public.employees (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     full_name VARCHAR(100) NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('ç', 'Nurse', 'Administrator')),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('Doctor', 'Nurse', 'Administrator')),
     employee_code VARCHAR(20) NOT NULL UNIQUE
 );
 

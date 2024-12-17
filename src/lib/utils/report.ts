@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable/dist/jspdf.plugin.autotable';
+import 'jspdf-autotable';
 import type { UserOptions } from 'jspdf-autotable';
 import { format } from 'date-fns';
 import type { Database } from '@/types/supabase';

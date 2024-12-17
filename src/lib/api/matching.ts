@@ -59,45 +59,63 @@ function transformRecipientData(recipientData: any) {
     mrn: recipientData.mrn,
     nationalId: recipientData.national_id,
     fullName: recipientData.full_name,
+    age: recipientData.age,
     bloodType: recipientData.blood_type,
+    mobileNumber: recipientData.mobile_number,
     hlaTyping: {
-      hlaA: recipientData.hla_typing?.hlaA || recipientData.hla_typing?.hla_a || '',
-      hlaB: recipientData.hla_typing?.hlaB || recipientData.hla_typing?.hla_b || '',
-      hlaC: recipientData.hla_typing?.hlaC || recipientData.hla_typing?.hla_c || '',
-      hlaDR: recipientData.hla_typing?.hlaDR || recipientData.hla_typing?.hla_dr || '',
-      hlaDQ: recipientData.hla_typing?.hlaDQ || recipientData.hla_typing?.hla_dq || '',
-      hlaDP: recipientData.hla_typing?.hlaDP || recipientData.hla_typing?.hla_dp || ''
+      hlaA: recipientData.hla_typing?.hla_a || '',
+      hlaB: recipientData.hla_typing?.hla_b || '',
+      hlaC: recipientData.hla_typing?.hla_c || '',
+      hlaDR: recipientData.hla_typing?.hla_dr || '',
+      hlaDQ: recipientData.hla_typing?.hla_dq || '',
+      hlaDP: recipientData.hla_typing?.hla_dp || ''
     },
     pra: recipientData.pra || 0,
     crossmatchRequirement: recipientData.crossmatch_requirement,
     viralScreening: recipientData.viral_screening,
     cmvStatus: recipientData.cmv_status,
-    unacceptableAntigens: recipientData.unacceptable_antigens || ''
+    unacceptableAntigens: recipientData.unacceptable_antigens || '',
+    donorAntibodies: recipientData.donor_antibodies || '',
+    medicalHistory: recipientData.medical_history || '',
+    notes: recipientData.notes || '',
+    serumCreatinine: recipientData.serum_creatinine || 0,
+    egfr: recipientData.egfr || 0,
+    bloodPressure: recipientData.blood_pressure || 'N/A'
   };
 }
 
 function transformDonorData(donorData: any) {
   return {
     id: donorData.id,
+    mrn: donorData.mrn,
+    nationalId: donorData.national_id,
     fullName: donorData.full_name,
+    age: donorData.age,
     bloodType: donorData.blood_type,
+    mobileNumber: donorData.mobile_number,
     hlaTyping: {
-      hlaA: donorData.hla_typing?.hlaA || donorData.hla_typing?.hla_a || '',
-      hlaB: donorData.hla_typing?.hlaB || donorData.hla_typing?.hla_b || '',
-      hlaC: donorData.hla_typing?.hlaC || donorData.hla_typing?.hla_c || '',
-      hlaDR: donorData.hla_typing?.hlaDR || donorData.hla_typing?.hla_dr || '',
-      hlaDQ: donorData.hla_typing?.hlaDQ || donorData.hla_typing?.hla_dq || '',
-      hlaDP: donorData.hla_typing?.hlaDP || donorData.hla_typing?.hla_dp || ''
+      hlaA: donorData.hla_typing?.hla_a || '',
+      hlaB: donorData.hla_typing?.hla_b || '',
+      hlaC: donorData.hla_typing?.hla_c || '',
+      hlaDR: donorData.hla_typing?.hla_dr || '',
+      hlaDQ: donorData.hla_typing?.hla_dq || '',
+      hlaDP: donorData.hla_typing?.hla_dp || ''
     },
     crossmatchResult: donorData.crossmatch_result,
-    dsaResult: { 
-      detected: donorData.dsa_result?.detected || false,
-      mfi: donorData.dsa_result?.mfi || 0
-    },
+    donorAntibodies: donorData.donor_antibodies || '',
     serumCreatinine: donorData.serum_creatinine || 0,
     egfr: donorData.egfr || 0,
-    viralScreening: donorData.viral_screening,
-    cmvStatus: donorData.cmv_status
+    bloodPressure: donorData.blood_pressure || 'N/A',
+    viralScreening: donorData.viral_screening || '',
+    cmvStatus: donorData.cmv_status || '',
+    medicalConditions: donorData.medical_conditions || '',
+    notes: donorData.notes || '',
+    highResTyping: donorData.high_res_typing || '',
+    antigenMismatch: donorData.antigen_mismatch || 0,
+    dsaResult: {
+      detected: false, // Add proper DSA handling if needed
+    },
+    status: donorData.status
   };
 }
 
