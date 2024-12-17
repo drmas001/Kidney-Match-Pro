@@ -12,19 +12,16 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
-    include: ['jspdf-autotable']
   },
   build: {
-    commonjsOptions: {
-      include: [/jspdf-autotable/, /node_modules/],
-    },
     rollupOptions: {
+      external: ['jspdf-autotable'],
       output: {
-        manualChunks: {
-          jspdf: ['jspdf', 'jspdf-autotable'],
-        },
-      },
-    },
+        globals: {
+          'jspdf-autotable': 'jspdf-autotable'
+        }
+      }
+    }
   },
   define: {
     'process.env': process.env
