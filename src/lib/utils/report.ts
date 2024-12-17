@@ -34,7 +34,7 @@ export function generatePDF(data: ReportData) {
   const contentWidth = pageWidth - (margin * 2);
   let y = margin;
 
-  // Helper functions
+  // Enhanced helper functions
   const addText = (text: string, size = 12, yIncrement = 10, align: 'left' | 'center' = 'left') => {
     doc.setFontSize(size);
     if (align === 'center') {
@@ -48,7 +48,13 @@ export function generatePDF(data: ReportData) {
   const addSection = (title: string) => {
     y += 5;
     doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
     doc.text(title, margin, y);
+    // Add an underline for section headers
+    const titleWidth = doc.getTextWidth(title);
+    doc.setLineWidth(0.5);
+    y += 1;
+    doc.line(margin, y, margin + titleWidth, y);
     doc.setFont('helvetica', 'normal');
     y += 10;
   };
@@ -75,6 +81,70 @@ export function generatePDF(data: ReportData) {
     y += 6;
   };
 
+  // New helper functions for enhanced tables
+  const drawTableHeader = (headers: string[], colWidths: number[], rowHeight: number = 10) => {
+    let xPos = margin;
+    
+    // Draw header background
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, y - 5, contentWidth, rowHeight, 'F');
+    
+    // Draw header text
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    headers.forEach((header, i) => {
+      doc.text(header, xPos + 2, y, { maxWidth: colWidths[i] - 4 });
+      xPos += colWidths[i];
+    });
+    
+    // Draw header border
+    doc.setLineWidth(0.2);
+    doc.line(margin, y - 5, margin + contentWidth, y - 5); // Top
+    doc.line(margin, y + 5, margin + contentWidth, y + 5); // Bottom
+    
+    // Draw vertical lines
+    xPos = margin;
+    headers.forEach((_, i) => {
+      doc.line(xPos, y - 5, xPos, y + 5);
+      xPos += colWidths[i];
+    });
+    doc.line(xPos, y - 5, xPos, y + 5); // Last vertical line
+    
+    y += rowHeight;
+  };
+
+  const drawTableRow = (rowData: (string | number)[], colWidths: number[], rowHeight: number = 8) => {
+    let xPos = margin;
+    
+    // Draw row background (alternating colors)
+    if ((y / rowHeight) % 2 === 0) {
+      doc.setFillColor(250, 250, 250);
+      doc.rect(margin, y - 4, contentWidth, rowHeight, 'F');
+    }
+    
+    // Draw cell content
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    rowData.forEach((text, i) => {
+      doc.text(String(text), xPos + 2, y, {
+        maxWidth: colWidths[i] - 4
+      });
+      xPos += colWidths[i];
+    });
+    
+    // Draw cell borders
+    doc.setLineWidth(0.1);
+    xPos = margin;
+    rowData.forEach((_, i) => {
+      doc.line(xPos, y - 4, xPos, y + 4);
+      xPos += colWidths[i];
+    });
+    doc.line(xPos, y - 4, xPos, y + 4); // Last vertical line
+    doc.line(margin, y + 4, margin + contentWidth, y + 4); // Bottom line
+    
+    y += rowHeight;
+  };
+
   const checkPageSpace = (neededSpace: number) => {
     if (y + neededSpace > doc.internal.pageSize.height - margin) {
       doc.addPage();
@@ -92,22 +162,38 @@ export function generatePDF(data: ReportData) {
 
   // Recipient Information
   addSection('Recipient Information');
-  addField('Name', recipient.full_name);
-  addField('MRN', recipient.mrn);
-  addField('National ID', recipient.national_id);
-  addField('Blood Type', recipient.blood_type);
-  addField('PRA', `${recipient.pra}%`);
-  addField('Crossmatch Requirement', recipient.crossmatch_requirement);
-  addField('CMV Status', recipient.cmv_status);
+  
+  // Personal Information
+  addSection('Personal Information');
+  addField('Medical Record Number (MRN)', recipient.mrn || 'N/A');
+  addField('National ID Number', recipient.national_id || 'N/A');
+  addField('Full Name', recipient.full_name || 'N/A');
+  addField('Age', recipient.age || 'N/A');
+  addField('Blood Type', recipient.blood_type || 'N/A');
+  addField('Mobile Number', recipient.mobile_number || 'N/A');
 
-  // HLA Typing
-  addSection('HLA Typing');
-  addField('HLA-A', recipient.hla_typing.hla_a || 'N/A');
-  addField('HLA-B', recipient.hla_typing.hla_b || 'N/A');
-  addField('HLA-C', recipient.hla_typing.hla_c || 'N/A');
-  addField('HLA-DR', recipient.hla_typing.hla_dr || 'N/A');
-  addField('HLA-DQ', recipient.hla_typing.hla_dq || 'N/A');
-  addField('HLA-DP', recipient.hla_typing.hla_dp || 'N/A');
+  // HLA Typing Requirements
+  addSection('HLA Typing Requirements');
+  addField('HLA-A Typing', recipient.hla_typing?.hla_a || 'N/A');
+  addField('HLA-B Typing', recipient.hla_typing?.hla_b || 'N/A');
+  addField('HLA-C Typing', recipient.hla_typing?.hla_c || 'N/A');
+  addField('HLA-DR Typing', recipient.hla_typing?.hla_dr || 'N/A');
+  addField('HLA-DQ Typing', recipient.hla_typing?.hla_dq || 'N/A');
+  addField('HLA-DP Typing', recipient.hla_typing?.hla_dp || 'N/A');
+  addField('Unacceptable Antigens', recipient.donor_antibodies || 'None');
+  addField('Panel Reactive Antibody (PRA) %', recipient.pra ? `${recipient.pra}%` : 'N/A');
+  addField('Crossmatch Requirement', recipient.crossmatch_requirement || 'N/A');
+  addField('Donor-Specific Antibodies', recipient.donor_antibodies || 'None');
+
+  // Medical Information
+  addSection('Medical Information');
+  addField('Medical History', recipient.medical_history || 'N/A');
+  addField('Serum Creatinine (mg/dL)', recipient.serum_creatinine || 'N/A');
+  addField('eGFR', recipient.egfr || 'N/A');
+  addField('Blood Pressure', recipient.blood_pressure || 'N/A');
+  addField('Viral Screening Results', recipient.viral_screening || 'N/A');
+  addField('CMV Status', recipient.cmv_status || 'N/A');
+  addField('Recipient Notes', recipient.notes || 'N/A');
 
   // Matching Summary
   checkPageSpace(50);
@@ -134,20 +220,66 @@ export function generatePDF(data: ReportData) {
     compatibleDonors
       .sort((a, b) => b.compatibilityScore - a.compatibilityScore)
       .forEach((result, index) => {
+        if (index === 0) { // Only for the highest compatible donor
+          checkPageSpace(60);
+          
+          addSection('Highest Compatible Donor');
+          
+          // Personal Information
+          addSection('Personal Information');
+          addField('Medical Record Number (MRN)', result.donor.mrn || 'N/A');
+          addField('National ID Number', result.donor.national_id || 'N/A');
+          addField('Full Name', result.donor.full_name || 'N/A');
+          addField('Age', result.donor.age || 'N/A');
+          addField('Blood Type', result.donor.blood_type || 'N/A');
+          addField('Mobile Number', result.donor.mobile_number || 'N/A');
+
+          // HLA Typing Information
+          addSection('HLA Typing Information');
+          addField('HLA-A Typing', result.donor.hla_typing?.hla_a || 'N/A');
+          addField('HLA-B Typing', result.donor.hla_typing?.hla_b || 'N/A');
+          addField('HLA-C Typing', result.donor.hla_typing?.hla_c || 'N/A');
+          addField('HLA-DR Typing', result.donor.hla_typing?.hla_dr || 'N/A');
+          addField('HLA-DQ Typing', result.donor.hla_typing?.hla_dq || 'N/A');
+          addField('HLA-DP Typing', result.donor.hla_typing?.hla_dp || 'N/A');
+
+          // Medical Information
+          addSection('Medical Information');
+          addField('Medical History', result.donor.medical_conditions || 'N/A');
+          addField('Serum Creatinine (mg/dL)', result.donor.serum_creatinine || 'N/A');
+          addField('eGFR', result.donor.egfr || 'N/A');
+          addField('Blood Pressure', result.donor.blood_pressure || 'N/A');
+          addField('Viral Screening Results', result.donor.viral_screening || 'N/A');
+          addField('CMV Status', result.donor.cmv_status || 'N/A');
+
+          // Compatibility Information
+          addSection('Compatibility Information');
+          addField('Compatibility Score', `${(result.compatibilityScore * 100).toFixed(1)}%`);
+          addField('HLA Matches', `${result.matchDetails.hlaMatches}/12`);
+          addField('Crossmatch Result', result.donor.crossmatch_result || 'N/A');
+          addField('DSA Status', result.donor.donor_antibodies ? 'Detected' : 'Not Detected');
+
+          y += 10; // Extra space after highest compatible donor
+        }
+
+        // Basic donor information for all compatible donors
         checkPageSpace(60);
         
         // Donor header with score
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        const donorHeader = `${index + 1}. ${result.donor.full_name} - Score: ${(result.compatibilityScore * 100).toFixed(1)}%`;
+        const donorHeader = `${index + 1}. ${result.donor.full_name || 'N/A'} - Score: ${(result.compatibilityScore * 100).toFixed(1)}%`;
         doc.text(donorHeader, margin, y);
         y += 10;
 
         // Basic Information
-        addDetailField('Blood Type', `${result.donor.blood_type} (Compatible)`, '#22c55e');
+        addDetailField('Blood Type', `${result.donor.blood_type || 'N/A'} (Compatible)`, '#22c55e');
         addDetailField('HLA Matches', `${result.matchDetails.hlaMatches}/12 matches`);
-        addDetailField('Crossmatch', result.donor.crossmatch_result, 
+        addDetailField('Crossmatch', result.donor.crossmatch_result || 'N/A', 
           result.matchDetails.crossmatchCompatible ? '#22c55e' : '#ef4444');
+        addDetailField('National ID', result.donor.national_id || 'N/A');
+        addDetailField('MRN', result.donor.mrn || 'N/A');
+        addDetailField('Mobile Number', result.donor.mobile_number || 'N/A');
         
         // DSA Information
         const dsaText = result.donor.donor_antibodies
@@ -157,9 +289,11 @@ export function generatePDF(data: ReportData) {
           result.donor.donor_antibodies ? '#eab308' : '#22c55e');
         
         // Medical Information
-        addDetailField('CMV Status', `${result.donor.cmv_status} (Recipient: ${recipient.cmv_status})`);
-        addDetailField('Serum Creatinine', `${result.donor.serum_creatinine} mg/dL`);
-        addDetailField('eGFR', `${result.donor.egfr} mL/min/1.73m²`);
+        addDetailField('CMV Status', `${result.donor.cmv_status || 'N/A'} (Recipient: ${recipient.cmv_status || 'N/A'})`);
+        addDetailField('Serum Creatinine', `${result.donor.serum_creatinine || 'N/A'} mg/dL`);
+        addDetailField('eGFR', `${result.donor.egfr || 'N/A'} mL/min/1.73m²`);
+        addDetailField('Blood Pressure', result.donor.blood_pressure || 'N/A');
+        addDetailField('Medical History', result.donor.medical_conditions || 'N/A');
         
         // HLA Typing Comparison
         y += 3;
@@ -170,12 +304,12 @@ export function generatePDF(data: ReportData) {
         doc.setFont('helvetica', 'normal');
         
         const hlaComparison = [
-          { locus: 'A', donor: result.donor.hla_typing.hla_a, recipient: recipient.hla_typing.hla_a },
-          { locus: 'B', donor: result.donor.hla_typing.hla_b, recipient: recipient.hla_typing.hla_b },
-          { locus: 'C', donor: result.donor.hla_typing.hla_c, recipient: recipient.hla_typing.hla_c },
-          { locus: 'DR', donor: result.donor.hla_typing.hla_dr, recipient: recipient.hla_typing.hla_dr },
-          { locus: 'DQ', donor: result.donor.hla_typing.hla_dq, recipient: recipient.hla_typing.hla_dq },
-          { locus: 'DP', donor: result.donor.hla_typing.hla_dp, recipient: recipient.hla_typing.hla_dp }
+          { locus: 'A', donor: result.donor.hla_typing?.hla_a, recipient: recipient.hla_typing?.hla_a },
+          { locus: 'B', donor: result.donor.hla_typing?.hla_b, recipient: recipient.hla_typing?.hla_b },
+          { locus: 'C', donor: result.donor.hla_typing?.hla_c, recipient: recipient.hla_typing?.hla_c },
+          { locus: 'DR', donor: result.donor.hla_typing?.hla_dr, recipient: recipient.hla_typing?.hla_dr },
+          { locus: 'DQ', donor: result.donor.hla_typing?.hla_dq, recipient: recipient.hla_typing?.hla_dq },
+          { locus: 'DP', donor: result.donor.hla_typing?.hla_dp, recipient: recipient.hla_typing?.hla_dp }
         ];
 
         hlaComparison.forEach(({ locus, donor, recipient: recipientHLA }) => {
@@ -189,47 +323,32 @@ export function generatePDF(data: ReportData) {
       });
   }
 
-  // Other Donors Summary
+  // Other Donors Summary with enhanced table
   if (incompatibleDonors.length > 0 || excludedDonors.length > 0) {
     checkPageSpace(50);
     addSection('Other Donors Summary');
     
-    // Table headers
-    const headers = ['Donor Name', 'Blood Type', 'Status', 'Reason'];
-    const colWidths = [50, 25, 30, 75];
-    let xPos = margin;
+    const headers = ['Donor Name', 'MRN', 'National ID', 'Blood Type', 'Status', 'Reason'];
+    const colWidths = [40, 30, 30, 25, 30, 45];
     
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    headers.forEach((header, i) => {
-      doc.text(header, xPos, y);
-      xPos += colWidths[i];
-    });
-    y += 7;
-    doc.line(margin, y - 3, pageWidth - margin, y - 3);
+    drawTableHeader(headers, colWidths);
 
-    // List incompatible and excluded donors
-    [...incompatibleDonors, ...excludedDonors].forEach(result => {
+    [...incompatibleDonors, ...excludedDonors].forEach((result) => {
       checkPageSpace(10);
-      xPos = margin;
       
       const rowData = [
-        result.donor.full_name,
-        result.donor.blood_type,
+        result.donor.full_name || 'N/A',
+        result.donor.mrn || 'N/A',
+        result.donor.national_id || 'N/A',
+        result.donor.blood_type || 'N/A',
         result.matchDetails.hasUnacceptableAntigens ? 'Excluded' : 'Incompatible',
         result.matchDetails.excludedReason || 'Incompatible match'
       ];
 
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      rowData.forEach((text, i) => {
-        doc.text(text.toString(), xPos, y, {
-          maxWidth: colWidths[i] - 5
-        });
-        xPos += colWidths[i];
-      });
-      y += 7;
+      drawTableRow(rowData, colWidths);
     });
+    
+    y += 5; // Add some space after the table
   }
 
   // Footer
