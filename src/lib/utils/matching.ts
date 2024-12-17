@@ -24,7 +24,7 @@ export function calculateCompatibilityScore(donor: Donor, recipient: Recipient):
 function isBloodTypeCompatible(donorType: string, recipientType: string): boolean {
   const compatibility: Record<string, string[]> = {
     'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
-    'O+': ['O+', 'A+', 'B+', 'AB+'],
+    'O+': ['O-','O+', 'A+', 'B+', 'AB+'],
     'A-': ['A-', 'A+', 'AB-', 'AB+'],
     'A+': ['A+', 'AB+'],
     'B-': ['B-', 'B+', 'AB-', 'AB+'],
