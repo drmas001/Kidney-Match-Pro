@@ -336,9 +336,14 @@ function calculateCompatibilityScore(params: CompatibilityParams): number {
 }
 
 function isBloodTypeCompatible(donorType: string, recipientType: string): boolean {
+  // Special case for O- donors
+  if (donorType === 'O-') {
+    return true; // O- can donate to all blood types
+  }
+
   const compatibility: Record<string, string[]> = {
-    'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
-    'O+': ['O+', 'A+', 'B+', 'AB+'],
+    'O-': ['O-'],
+    'O+': ['O-','O+', 'A+', 'B+', 'AB+'],
     'A-': ['A-', 'A+', 'AB-', 'AB+'],
     'A+': ['A+', 'AB+'],
     'B-': ['B-', 'B+', 'AB-', 'AB+'],
