@@ -1,3 +1,4 @@
+import { useFormContext } from 'react-hook-form';
 import {
   FormField,
   FormItem,
@@ -6,25 +7,39 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { useFormContext } from 'react-hook-form';
-import type { DonorFormData } from '@/types/donor';
+import { Input } from '@/components/ui/input';
 
 export function DonorAdditionalInfo() {
-  const form = useFormContext<DonorFormData>();
+  const { control } = useFormContext();
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Additional Information</h2>
-      <div className="grid gap-4">
+      <h2 className="text-lg font-medium">Additional Information</h2>
+      <div className="grid grid-cols-1 gap-6">
         <FormField
-          control={form.control}
+          control={control}
+          name="donorAntibodies"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Donor Antibodies</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter donor antibodies" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
           name="medicalConditions"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Other Medical Conditions</FormLabel>
+              <FormLabel>Medical Conditions</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Enter any relevant medical conditions"
+                <Textarea 
+                  placeholder="Enter any relevant medical conditions or history"
+                  className="min-h-[100px]"
                   {...field}
                 />
               </FormControl>
@@ -32,15 +47,17 @@ export function DonorAdditionalInfo() {
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Donor Notes</FormLabel>
+              <FormLabel>Additional Notes</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Enter additional notes or instructions"
+                <Textarea 
+                  placeholder="Enter any additional notes or comments"
+                  className="min-h-[100px]"
                   {...field}
                 />
               </FormControl>

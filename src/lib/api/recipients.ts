@@ -4,6 +4,16 @@ import type { Recipient } from '@/types/matching';
 
 export async function createRecipient(data: RecipientFormData) {
   try {
+    // Validate required fields
+    if (!data.mrn || !data.nationalId || !data.fullName) {
+      throw new Error('Missing required fields: MRN, National ID, or Full Name');
+    }
+
+    // Validate Supabase connection
+    if (!supabase) {
+      throw new Error('Database connection not initialized');
+    }
+
     // Transform the data to match database schema
     const recipientData = {
       mrn: data.mrn.trim(),
@@ -13,27 +23,27 @@ export async function createRecipient(data: RecipientFormData) {
       blood_type: data.bloodType,
       mobile_number: data.mobileNumber.trim(),
       hla_typing: {
-        hla_a: data.hlaA.trim(),
-        hla_b: data.hlaB.trim(),
-        hla_c: data.hlaC.trim(),
-        hla_dr: data.hlaDR.trim(),
-        hla_dq: data.hlaDQ.trim(),
-        hla_dp: data.hlaDP.trim(),
+        hla_a: data.hlaA?.trim() || '',
+        hla_b: data.hlaB?.trim() || '',
+        hla_c: data.hlaC?.trim() || '',
+        hla_dr: data.hlaDR?.trim() || '',
+        hla_dq: data.hlaDQ?.trim() || '',
+        hla_dp: data.hlaDP?.trim() || '',
       },
       unacceptable_antigens: data.unacceptableAntigens?.trim() || '',
-      pra: data.pra,
+      pra: data.pra || 0,
       crossmatch_requirement: data.crossmatchRequirement,
       donor_antibodies: data.donorAntibodies?.trim() || '',
-      serum_creatinine: data.serumCreatinine,
-      egfr: data.egfr,
-      blood_pressure: data.bloodPressure.trim(),
-      viral_screening: data.viralScreening.trim(),
+      serum_creatinine: data.serumCreatinine || 0,
+      egfr: data.egfr || 0,
+      blood_pressure: data.bloodPressure?.trim() || '',
+      viral_screening: data.viralScreening?.trim() || '',
       cmv_status: data.cmvStatus,
       medical_history: data.medicalHistory?.trim() || '',
       notes: data.notes?.trim() || '',
     };
 
-    // Insert into database
+    // Insert into database with better error handling
     const { data: recipient, error } = await supabase
       .from('recipients')
       .insert([recipientData])
@@ -42,7 +52,14 @@ export async function createRecipient(data: RecipientFormData) {
 
     if (error) {
       console.error('Database error:', error);
-      throw error;
+      if (error.code === '23505') { // Unique constraint violation
+        if (error.message.includes('recipients_mrn_key')) {
+          throw new Error('A recipient with this MRN already exists');
+        } else if (error.message.includes('recipients_national_id_key')) {
+          throw new Error('A recipient with this National ID already exists');
+        }
+      }
+      throw new Error(`Database error: ${error.message}`);
     }
 
     if (!recipient) {
@@ -140,7 +157,7 @@ function transformRecipientData(data: any): Recipient {
       hlaC: data.hla_typing?.hla_c || '',
       hlaDR: data.hla_typing?.hla_dr || '',
       hlaDQ: data.hla_typing?.hla_dq || '',
-      hlaDP: data.hla_typing?.hla_dp || '',
+      hlaDP: data.hla_typing?.hla_dp || ''
     },
     pra: data.pra,
     crossmatchRequirement: data.crossmatch_requirement,

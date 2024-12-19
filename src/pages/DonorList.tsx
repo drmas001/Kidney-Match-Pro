@@ -5,18 +5,15 @@ import { DonorSearch } from '@/components/donors/DonorSearch';
 import { DonorDeleteDialog } from '@/components/donors/DonorDeleteDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
-import { deleteDonor } from '@/lib/api/donors';
-import type { Database } from '@/types/supabase';
-import { supabase } from '@/lib/supabase';
+import { getDonors, deleteDonor } from '@/lib/api/donors';
+import type { Donor } from '@/types/matching';
 import { toast } from 'sonner';
-
-type DonorWithStatus = Database['public']['Tables']['donors']['Row'];
 
 export function DonorList() {
   const navigate = useNavigate();
-  const [donors, setDonors] = useState<DonorWithStatus[]>([]);
-  const [filteredDonors, setFilteredDonors] = useState<DonorWithStatus[]>([]);
-  const [selectedDonor, setSelectedDonor] = useState<DonorWithStatus | null>(null);
+  const [donors, setDonors] = useState<Donor[]>([]);
+  const [filteredDonors, setFilteredDonors] = useState<Donor[]>([]);
+  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,13 +23,7 @@ export function DonorList() {
 
   const loadDonors = async () => {
     try {
-      const { data, error } = await supabase
-        .from('donors')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
+      const data = await getDonors();
       setDonors(data);
       setFilteredDonors(data);
     } catch (error) {
@@ -43,7 +34,7 @@ export function DonorList() {
     }
   };
 
-  const handleSearch = (query: string, filters: { status?: string; bloodType?: string }) => {
+  const handleSearch = (query: string, filters: { bloodType?: string; status?: string }) => {
     let filtered = [...donors];
 
     // Apply text search
@@ -51,32 +42,39 @@ export function DonorList() {
       const searchTerm = query.toLowerCase();
       filtered = filtered.filter(
         (donor) =>
-          donor.full_name.toLowerCase().includes(searchTerm) ||
-          donor.blood_type.toLowerCase().includes(searchTerm)
+          donor.fullName.toLowerCase().includes(searchTerm) ||
+          donor.mrn.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply blood type filter
+    if (filters.bloodType) {
+      filtered = filtered.filter(
+        (donor) => donor.bloodType === filters.bloodType
       );
     }
 
     // Apply status filter
     if (filters.status) {
-      filtered = filtered.filter((donor) => donor.status === filters.status);
-    }
-
-    // Apply blood type filter
-    if (filters.bloodType) {
-      filtered = filtered.filter((donor) => donor.blood_type === filters.bloodType);
+      filtered = filtered.filter(
+        (donor) => donor.status === filters.status
+      );
     }
 
     setFilteredDonors(filtered);
   };
 
-  const handleDelete = async (donor: DonorWithStatus) => {
+  const handleDelete = async (donor: Donor) => {
     if (donor.status === 'Utilized') {
-      toast.error('Cannot delete utilized donors');
+      toast.error('Cannot delete a utilized donor');
       return;
     }
-    
     setSelectedDonor(donor);
     setShowDeleteDialog(true);
+  };
+
+  const handleEdit = (donor: Donor) => {
+    navigate(`/donors/edit/${donor.id}`);
   };
 
   const confirmDelete = async () => {
@@ -119,6 +117,7 @@ export function DonorList() {
       <DonorTable
         donors={filteredDonors}
         onDelete={handleDelete}
+        onEdit={handleEdit}
       />
 
       <DonorDeleteDialog

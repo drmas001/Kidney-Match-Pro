@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RecipientPersonalInfo } from '@/components/recipients/RecipientPersonalInfo';
 import { RecipientHLATyping } from '@/components/recipients/RecipientHLATyping';
 import { RecipientMedicalInfo } from '@/components/recipients/RecipientMedicalInfo';
@@ -7,43 +8,65 @@ import { Button } from '@/components/ui/button';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { recipientSchema } from '@/lib/validations/recipient';
-import { createRecipient } from '@/lib/api/recipients';
+import { getRecipient, updateRecipient } from '@/lib/api/recipients';
 import type { RecipientFormData } from '@/types/recipient';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
-export function RecipientForm() {
+export function RecipientEditForm() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  
   const methods = useForm<RecipientFormData>({
     resolver: zodResolver(recipientSchema),
-    defaultValues: {
-      mrn: '',
-      nationalId: '',
-      fullName: '',
-      age: 0,
-      bloodType: '',
-      mobileNumber: '',
-      hlaA: '',
-      hlaB: '',
-      hlaC: '',
-      hlaDR: '',
-      hlaDQ: '',
-      hlaDP: '',
-      unacceptableAntigens: '',
-      pra: 0,
-      crossmatchRequirement: '',
-      donorAntibodies: '',
-      serumCreatinine: 0,
-      egfr: 0,
-      bloodPressure: '',
-      viralScreening: '',
-      cmvStatus: '',
-      medicalHistory: '',
-      notes: '',
-    },
   });
 
+  useEffect(() => {
+    if (!id) return;
+    
+    const loadRecipient = async () => {
+      try {
+        const recipient = await getRecipient(id);
+        // Transform the data to match form fields
+        const formData = {
+          mrn: recipient.mrn,
+          nationalId: recipient.nationalId,
+          fullName: recipient.fullName,
+          age: recipient.age,
+          bloodType: recipient.bloodType,
+          mobileNumber: recipient.mobileNumber,
+          hlaA: recipient.hlaTyping.hlaA,
+          hlaB: recipient.hlaTyping.hlaB,
+          hlaC: recipient.hlaTyping.hlaC,
+          hlaDR: recipient.hlaTyping.hlaDR,
+          hlaDQ: recipient.hlaTyping.hlaDQ,
+          hlaDP: recipient.hlaTyping.hlaDP,
+          unacceptableAntigens: recipient.unacceptableAntigens,
+          pra: recipient.pra,
+          crossmatchRequirement: recipient.crossmatchRequirement,
+          donorAntibodies: recipient.donorAntibodies,
+          serumCreatinine: recipient.serumCreatinine,
+          egfr: recipient.egfr,
+          bloodPressure: recipient.bloodPressure,
+          viralScreening: recipient.viralScreening,
+          cmvStatus: recipient.cmvStatus,
+          medicalHistory: recipient.medicalHistory,
+          notes: recipient.notes,
+        };
+        methods.reset(formData);
+      } catch (error) {
+        console.error('Error loading recipient:', error);
+        toast.error('Failed to load recipient information');
+        navigate('/recipients');
+      }
+    };
+
+    loadRecipient();
+  }, [id, methods, navigate]);
+
   const onSubmit = async (data: RecipientFormData) => {
+    if (!id) return;
+
     try {
       // Validate required fields
       if (!data.bloodType) {
@@ -60,43 +83,20 @@ export function RecipientForm() {
       }
 
       // Show loading state
-      const loadingToast = toast.loading('Saving recipient information...');
+      const loadingToast = toast.loading('Updating recipient information...');
 
-      // Create recipient with better error logging
-      console.log('Submitting recipient data:', data); // Debug log
-      const response = await createRecipient(data);
-      console.log('Server response:', response); // Debug log
+      // Update recipient
+      await updateRecipient(id, data);
       
       // Clear loading state and show success
       toast.dismiss(loadingToast);
-      toast.success('Recipient information saved successfully');
+      toast.success('Recipient information updated successfully');
       
-      // Navigate to matching page
-      navigate('/matching');
+      // Navigate back to list
+      navigate('/recipients');
     } catch (error) {
-      console.error('Detailed error:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-      
-      toast.dismiss();
-      
-      if (error instanceof Error) {
-        if (error.message.includes('duplicate key')) {
-          if (error.message.includes('mrn')) {
-            toast.error('A recipient with this MRN already exists');
-          } else if (error.message.includes('national_id')) {
-            toast.error('A recipient with this National ID already exists');
-          } else {
-            toast.error('A recipient with these details already exists');
-          }
-        } else {
-          toast.error(`Error: ${error.message}`);
-        }
-      } else {
-        toast.error('Failed to save recipient information. Please check the console for details.');
-      }
+      console.error('Error updating recipient:', error);
+      toast.error('Failed to update recipient information');
     }
   };
 
@@ -104,7 +104,7 @@ export function RecipientForm() {
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
         <div className="rounded-lg border bg-card p-6">
-          <h1 className="text-2xl font-semibold mb-6">New Recipient Registration</h1>
+          <h1 className="text-2xl font-semibold mb-6">Edit Recipient Information</h1>
           <div className="space-y-8">
             <RecipientPersonalInfo />
             <RecipientHLATyping />
@@ -114,7 +114,7 @@ export function RecipientForm() {
               <Button 
                 type="button" 
                 variant="outline"
-                onClick={() => navigate('/matching')}
+                onClick={() => navigate('/recipients')}
               >
                 Cancel
               </Button>
@@ -126,7 +126,7 @@ export function RecipientForm() {
                 {methods.formState.isSubmitting && (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 )}
-                Save Recipient Information
+                Save Changes
               </Button>
             </div>
           </div>
@@ -134,4 +134,4 @@ export function RecipientForm() {
       </form>
     </FormProvider>
   );
-}
+} 

@@ -13,7 +13,7 @@ export const donorSchema = z.object({
     .max(100, 'Full name must be less than 100 characters'),
   age: z.number()
     .min(18, 'Must be at least 18 years old')
-    .max(80, 'Age must be less than 80'),
+    .max(90, 'Age must be less than 80'),
   bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
     required_error: 'Blood type is required',
   }),

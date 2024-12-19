@@ -1,3 +1,4 @@
+import { useFormContext } from 'react-hook-form';
 import {
   FormField,
   FormItem,
@@ -6,166 +7,126 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useFormContext } from 'react-hook-form';
-import type { DonorFormData } from '@/types/donor';
 
 export function DonorHLATyping() {
-  const form = useFormContext<DonorFormData>();
+  const { control } = useFormContext();
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">HLA Typing Information</h2>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <h2 className="text-lg font-medium">HLA Typing Information</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
-          control={form.control}
+          control={control}
           name="hlaA"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>HLA-A Typing</FormLabel>
+              <FormLabel>HLA-A</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., A1, A2" {...field} />
+                <Input placeholder="Enter HLA-A typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="hlaB"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>HLA-B Typing</FormLabel>
+              <FormLabel>HLA-B</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., B7, B27" {...field} />
+                <Input placeholder="Enter HLA-B typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="hlaC"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>HLA-C Typing</FormLabel>
+              <FormLabel>HLA-C</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Cw4, Cw6" {...field} />
+                <Input placeholder="Enter HLA-C typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="hlaDR"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>HLA-DR Typing</FormLabel>
+              <FormLabel>HLA-DR</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., DR15, DR16" {...field} />
+                <Input placeholder="Enter HLA-DR typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="hlaDQ"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>HLA-DQ Typing</FormLabel>
+              <FormLabel>HLA-DQ</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., DQ5, DQ6" {...field} />
+                <Input placeholder="Enter HLA-DQ typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="hlaDP"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>HLA-DP Typing</FormLabel>
+              <FormLabel>HLA-DP</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., DP4, DP5" {...field} />
+                <Input placeholder="Enter HLA-DP typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="highResTyping"
           render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>High-Resolution Typing Results</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="e.g., HLA-A01:01, HLA-B07:02"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="donorAntibodies"
-          render={({ field }) => (
             <FormItem>
-              <FormLabel>Donor-Specific Antibodies</FormLabel>
+              <FormLabel>High Resolution Typing</FormLabel>
               <FormControl>
-                <Input placeholder="Enter antibodies" {...field} />
+                <Input placeholder="Enter high resolution typing" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
-          control={form.control}
+          control={control}
           name="antigenMismatch"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Antigen Mismatch Count</FormLabel>
+              <FormLabel>Antigen Mismatch</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter mismatch count"
+                <Input 
+                  type="number" 
+                  placeholder="Enter antigen mismatch" 
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                 />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="crossmatchResult"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Crossmatch Test Result</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select result" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="Positive">Positive</SelectItem>
-                  <SelectItem value="Negative">Negative</SelectItem>
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}

@@ -316,6 +316,11 @@ function calculateCompatibilityScore(params: CompatibilityParams): number {
     return 0;
   }
 
+  // Check for minimum HLA matches requirement (3/12)
+  if (hlaMatches < 3) {
+    return 0;
+  }
+
   // Base score starts at 0
   let score = 0;
 

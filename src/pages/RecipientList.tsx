@@ -62,6 +62,10 @@ export function RecipientList() {
     setShowDeleteDialog(true);
   };
 
+  const handleEdit = (recipient: Recipient) => {
+    navigate(`/recipients/edit/${recipient.id}`);
+  };
+
   const confirmDelete = async () => {
     if (!selectedRecipient) return;
 
@@ -102,6 +106,7 @@ export function RecipientList() {
       <RecipientTable
         recipients={filteredRecipients}
         onDelete={handleDelete}
+        onEdit={handleEdit}
       />
 
       <RecipientDeleteDialog

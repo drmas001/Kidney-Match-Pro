@@ -7,18 +7,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Trash2 } from 'lucide-react';
-import type { Database } from '@/types/supabase';
-
-type DonorWithStatus = Database['public']['Tables']['donors']['Row'];
+import { Trash2, Pencil } from 'lucide-react';
+import type { Donor } from '@/types/matching';
 
 interface DonorTableProps {
-  donors: DonorWithStatus[];
-  onDelete: (donor: DonorWithStatus) => void;
+  donors: Donor[];
+  onDelete: (donor: Donor) => void;
+  onEdit: (donor: Donor) => void;
 }
 
-export function DonorTable({ donors, onDelete }: DonorTableProps) {
+export function DonorTable({ donors, onDelete, onEdit }: DonorTableProps) {
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -43,46 +41,36 @@ export function DonorTable({ donors, onDelete }: DonorTableProps) {
           ) : (
             donors.map((donor) => (
               <TableRow key={donor.id}>
-                <TableCell className="font-medium">{donor.full_name}</TableCell>
+                <TableCell className="font-medium">{donor.fullName}</TableCell>
                 <TableCell>{donor.mrn}</TableCell>
-                <TableCell>{donor.blood_type}</TableCell>
+                <TableCell>{donor.bloodType}</TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {donor.hla_typing ? (
+                    {donor.hlaTyping ? (
                       <>
-                        <div>A: {donor.hla_typing.hla_a || 'N/A'}</div>
-                        <div>B: {donor.hla_typing.hla_b || 'N/A'}</div>
-                        <div>DR: {donor.hla_typing.hla_dr || 'N/A'}</div>
+                        <div>A: {donor.hlaTyping.hlaA || 'N/A'}</div>
+                        <div>B: {donor.hlaTyping.hlaB || 'N/A'}</div>
+                        <div>DR: {donor.hlaTyping.hlaDR || 'N/A'}</div>
                       </>
                     ) : (
                       <span className="text-muted-foreground">No HLA data</span>
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
-                  <span
-                    className={
-                      donor.crossmatch_result === 'Negative'
-                        ? 'text-green-600 dark:text-green-500'
-                        : 'text-red-600 dark:text-red-500'
-                    }
+                <TableCell>{donor.crossmatchResult}</TableCell>
+                <TableCell>{donor.status}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(donor)}
                   >
-                    {donor.crossmatch_result}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={donor.status === 'Available' ? 'default' : 'secondary'}
-                  >
-                    {donor.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => onDelete(donor)}
-                    disabled={donor.status === 'Utilized'}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

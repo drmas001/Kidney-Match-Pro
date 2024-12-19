@@ -6,8 +6,10 @@ import { LandingPage } from '@/pages/LandingPage';
 import { LearnMore } from '@/pages/LearnMore';
 import { Dashboard } from '@/pages/Dashboard';
 import { DonorForm } from '@/pages/DonorForm';
+import { DonorEditForm } from '@/pages/DonorEditForm';
 import { DonorList } from '@/pages/DonorList';
 import { RecipientForm } from '@/pages/RecipientForm';
+import { RecipientEditForm } from '@/pages/RecipientEditForm';
 import { RecipientList } from '@/pages/RecipientList';
 import { MatchingSystem } from '@/pages/MatchingSystem';
 import { Reports } from '@/pages/Reports';
@@ -29,10 +31,12 @@ export default function App() {
           <Route path="/donors">
             <Route index element={<DonorList />} />
             <Route path="new" element={<DonorForm />} />
+            <Route path="edit/:id" element={<DonorEditForm />} />
           </Route>
           <Route path="/recipients">
             <Route index element={<RecipientList />} />
             <Route path="new" element={<RecipientForm />} />
+            <Route path="edit/:id" element={<RecipientEditForm />} />
           </Route>
           <Route path="/matching" element={<MatchingSystem />} />
           <Route path="/reports" element={<Reports />} />

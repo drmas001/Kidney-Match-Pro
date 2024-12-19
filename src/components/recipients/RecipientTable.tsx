@@ -7,15 +7,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 import type { Recipient } from '@/types/matching';
 
 interface RecipientTableProps {
   recipients: Recipient[];
   onDelete: (recipient: Recipient) => void;
+  onEdit: (recipient: Recipient) => void;
 }
 
-export function RecipientTable({ recipients, onDelete }: RecipientTableProps) {
+export function RecipientTable({ recipients, onDelete, onEdit }: RecipientTableProps) {
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -58,7 +59,14 @@ export function RecipientTable({ recipients, onDelete }: RecipientTableProps) {
                 </TableCell>
                 <TableCell>{recipient.pra}%</TableCell>
                 <TableCell>{recipient.crossmatchRequirement}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(recipient)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"

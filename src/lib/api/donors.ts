@@ -77,51 +77,66 @@ export async function getDonor(id: string) {
 }
 
 export async function updateDonor(id: string, data: Partial<DonorFormData>) {
-  const { data: donor, error } = await supabase
-    .from('donors')
-    .update({
-      mrn: data.mrn?.toUpperCase(),
-      national_id: data.nationalId?.toUpperCase(),
-      full_name: data.fullName,
-      age: data.age,
+  try {
+    // Transform the data to match database schema
+    const donorData = {
+      mrn: data.mrn?.trim().toUpperCase(),
+      national_id: data.nationalId?.trim().toUpperCase(),
+      full_name: data.fullName?.trim(),
+      age: data.age || 0,
       blood_type: data.bloodType,
-      mobile_number: data.mobileNumber,
-      hla_typing: data.hlaA && data.hlaB && data.hlaC && data.hlaDR && data.hlaDQ && data.hlaDP ? {
-        hla_a: data.hlaA,
-        hla_b: data.hlaB,
-        hla_c: data.hlaC,
-        hla_dr: data.hlaDR,
-        hla_dq: data.hlaDQ,
-        hla_dp: data.hlaDP,
-      } : undefined,
-      high_res_typing: data.highResTyping,
-      donor_antibodies: data.donorAntibodies,
-      antigen_mismatch: data.antigenMismatch,
+      mobile_number: data.mobileNumber?.trim(),
+      hla_typing: {
+        hla_a: data.hlaA?.trim() || '',
+        hla_b: data.hlaB?.trim() || '',
+        hla_c: data.hlaC?.trim() || '',
+        hla_dr: data.hlaDR?.trim() || '',
+        hla_dq: data.hlaDQ?.trim() || '',
+        hla_dp: data.hlaDP?.trim() || '',
+      },
+      high_res_typing: data.highResTyping?.trim() || '',
+      donor_antibodies: data.donorAntibodies?.trim() || '',
+      antigen_mismatch: data.antigenMismatch || 0,
       crossmatch_result: data.crossmatchResult,
-      serum_creatinine: data.serumCreatinine,
-      egfr: data.egfr,
-      blood_pressure: data.bloodPressure,
-      viral_screening: data.viralScreening,
+      serum_creatinine: data.serumCreatinine || 0,
+      egfr: data.egfr || 0,
+      blood_pressure: data.bloodPressure?.trim() || '',
+      viral_screening: data.viralScreening?.trim() || '',
       cmv_status: data.cmvStatus,
-      medical_conditions: data.medicalConditions,
-      notes: data.notes,
-    })
-    .eq('id', id)
-    .select()
-    .single();
+      medical_conditions: data.medicalConditions?.trim() || '',
+      notes: data.notes?.trim() || '',
+    };
 
-  if (error) {
-    if (error.code === '23505') {
-      if (error.message.includes('national_id')) {
-        throw new Error('A donor with this National ID already exists');
-      } else if (error.message.includes('mrn')) {
-        throw new Error('A donor with this MRN already exists');
+    const { data: donor, error } = await supabase
+      .from('donors')
+      .update(donorData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        if (error.message.includes('national_id')) {
+          throw new Error('A donor with this National ID already exists');
+        } else if (error.message.includes('mrn')) {
+          throw new Error('A donor with this MRN already exists');
+        }
       }
+      throw error;
     }
-    throw error;
-  }
 
-  return transformDonorData(donor);
+    if (!donor) {
+      throw new Error('Failed to update donor');
+    }
+
+    return transformDonorData(donor);
+  } catch (error) {
+    console.error('Error updating donor:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to update donor');
+  }
 }
 
 export async function deleteDonor(id: string) {

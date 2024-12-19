@@ -15,67 +15,26 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export function DonorPersonalInfo() {
+export function DonorMedicalInfo() {
   const { control } = useFormContext();
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-medium">Personal Information</h2>
+      <h2 className="text-lg font-medium">Medical Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={control}
-          name="mrn"
+          name="serumCreatinine"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Medical Record Number (MRN)</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter MRN" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="nationalId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>National ID</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter National ID" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="fullName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter full name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Age</FormLabel>
+              <FormLabel>Serum Creatinine (mg/dL)</FormLabel>
               <FormControl>
                 <Input 
                   type="number" 
-                  placeholder="Enter age" 
+                  step="0.1"
+                  placeholder="Enter serum creatinine" 
                   {...field}
-                  onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                  onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                 />
               </FormControl>
               <FormMessage />
@@ -85,25 +44,68 @@ export function DonorPersonalInfo() {
 
         <FormField
           control={control}
-          name="bloodType"
+          name="egfr"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Blood Type</FormLabel>
+              <FormLabel>eGFR (mL/min/1.73m²)</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  step="0.1"
+                  placeholder="Enter eGFR" 
+                  {...field}
+                  onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="bloodPressure"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Blood Pressure</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., 120/80" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="viralScreening"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Viral Screening Results</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter viral screening results" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="cmvStatus"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>CMV Status</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select blood type" />
+                    <SelectValue placeholder="Select CMV status" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="A+">A+</SelectItem>
-                  <SelectItem value="A-">A-</SelectItem>
-                  <SelectItem value="B+">B+</SelectItem>
-                  <SelectItem value="B-">B-</SelectItem>
-                  <SelectItem value="AB+">AB+</SelectItem>
-                  <SelectItem value="AB-">AB-</SelectItem>
-                  <SelectItem value="O+">O+</SelectItem>
-                  <SelectItem value="O-">O-</SelectItem>
+                  <SelectItem value="Positive">Positive</SelectItem>
+                  <SelectItem value="Negative">Negative</SelectItem>
+                  <SelectItem value="Unknown">Unknown</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -113,13 +115,21 @@ export function DonorPersonalInfo() {
 
         <FormField
           control={control}
-          name="mobileNumber"
+          name="crossmatchResult"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mobile Number</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter mobile number" {...field} />
-              </FormControl>
+              <FormLabel>Crossmatch Result</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select crossmatch result" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Positive">Positive</SelectItem>
+                  <SelectItem value="Negative">Negative</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -127,4 +137,4 @@ export function DonorPersonalInfo() {
       </div>
     </div>
   );
-}
+} 
