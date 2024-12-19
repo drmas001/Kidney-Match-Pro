@@ -3,6 +3,7 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Layout } from '@/components/layout/Layout';
 import { LoginPage } from '@/pages/LoginPage';
 import { LandingPage } from '@/pages/LandingPage';
+import { LearnMore } from '@/pages/LearnMore';
 import { Dashboard } from '@/pages/Dashboard';
 import { DonorForm } from '@/pages/DonorForm';
 import { DonorList } from '@/pages/DonorList';
@@ -20,6 +21,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/learn-more" element={<LearnMore />} />
         
         {/* Protected Routes */}
         <Route element={<RequireAuth><Layout /></RequireAuth>}>

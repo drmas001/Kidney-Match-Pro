@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Shield,
   CheckCircle,
+  Star,
 } from 'lucide-react';
 
 export function LandingPage() {
@@ -41,12 +42,38 @@ export function LandingPage() {
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
               Advanced analytics and real-time matching for healthcare professionals.
               Streamline your kidney transplant matching process with precision and care.
+              <div className="my-8 relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-primary/20"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-4">
+                    <Star className="h-6 w-6 text-primary/40" />
+                  </span>
+                </div>
+              </div>
+              <p className="font-['Noto_Naskh_Arabic'] text-2xl sm:text-3xl text-primary/90 my-4 leading-relaxed">
+                ومن أحياها فكأنما أحيا الناس جميعا
+              </p>
+              <p className="italic text-muted-foreground">
+                "If any one saved a life, it would be as if he saved the life of the whole people."
+              </p>
+              <div className="my-8 relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-primary/20"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-4">
+                    <Star className="h-6 w-6 text-primary/40" />
+                  </span>
+                </div>
+              </div>
             </p>
             <div className="mt-10 flex justify-center gap-4">
               <Button size="lg" onClick={() => navigate('/login')} className="gap-2">
                 Get Started <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate('/login')}>
+              <Button size="lg" variant="outline" onClick={() => navigate('/learn-more')}>
                 Learn More
               </Button>
             </div>
